@@ -43,4 +43,29 @@ Untuk membantu siswa **mengerti lebih cepat dan memahami materi secara mendalam*
 ---
 
 ## 🚀 Cara Menjalankan:
+
+### 1. Mode Standalone (Offline / Lokal di Laptop/PC/HP):
 Cukup **klik dua kali (Double-click)** file `index.html` pada browser laptop atau HP Anda!
+
+---
+
+## 🖥️ Deploy di Server Sekolah / Lab (Proxmox VE LXC):
+
+Aplikasi ini sangat ringan dan siap di-deploy pada container **LXC Proxmox (Debian 12 / Ubuntu)** menggunakan Nginx Web Server.
+
+Panduan lengkap instalasi bertahap dan cara update dapat dibaca di berkas:
+👉 **[PANDUAN_PROXMOX_LXC.md](PANDUAN_PROXMOX_LXC.md)**
+
+### Quick Setup di Terminal LXC:
+```bash
+apt update && apt install -y git
+git clone https://github.com/kajurtkjsmkbp-hub/bahasa-inggris.git /var/www/bahasa-inggris
+cd /var/www/bahasa-inggris
+bash scripts/setup-lxc.sh
+```
+
+### Quick Update di Terminal LXC:
+```bash
+update-lms
+```
+*(atau jalankan `bash /var/www/bahasa-inggris/scripts/update.sh`)*
