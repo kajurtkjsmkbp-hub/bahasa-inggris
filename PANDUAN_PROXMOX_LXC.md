@@ -1,7 +1,7 @@
 # 📖 Panduan Lengkap Instalasi & Pemeliharaan di Proxmox VE (LXC Container)
-## LMS Bahasa Inggris Kelas IV SD (English Junior)
+## LMS Bahasa Inggris Kelas IV SD (Khanza.NET English Junior)
 
-Panduan ini ditujukan bagi Administrator Jaringan / Guru IT Sekolah untuk memasang aplikasi **English Junior (LMS Bahasa Inggris)** pada container **LXC (Linux Container)** di **Proxmox Virtual Environment (PVE)**, baik secara mandiri (offline di lab sekolah) maupun online.
+Panduan ini ditujukan bagi Administrator Jaringan / Guru IT Sekolah untuk memasang aplikasi **Khanza.NET English Junior (LMS Bahasa Inggris)** pada container **LXC (Linux Container)** di **Proxmox Virtual Environment (PVE)**, baik secara mandiri (offline di lab sekolah) maupun online.
 
 ---
 

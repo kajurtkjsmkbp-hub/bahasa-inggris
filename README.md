@@ -1,4 +1,4 @@
-# 🌟 English Junior - LMS Bahasa Inggris Kelas IV SD
+# 🌟 Khanza.NET English Junior - LMS Bahasa Inggris Kelas IV SD
 
 Website Media Belajar Interaktif Bahasa Inggris untuk Siswa-Siswi **Kelas IV Sekolah Dasar (SD)**. Didesain khusus dengan visual menarik, penuh warna, ramah anak, dan dilengkapi teknologi suara (*Native Audio Speech Synthesis*) tanpa perlu instalasi server atau dependensi rumit.
 
