@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Junior - Belajar Bahasa Inggris Kelas IV SD</title>
+  
+  <!-- Google Fonts: Fredoka & Quicksand untuk tampilan ceria & ramah anak -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌟</text></svg>">
+</head>
+<body>
+
+  <!-- Background Animated Bubbles -->
+  <div class="bg-bubbles">
+    <div class="bubble" style="left: 10%; width: 60px; height: 60px; background: #6366F1; animation-duration: 14s;"></div>
+    <div class="bubble" style="left: 30%; width: 40px; height: 40px; background: #EC4899; animation-duration: 18s; animation-delay: 2s;"></div>
+    <div class="bubble" style="left: 70%; width: 80px; height: 80px; background: #F59E0B; animation-duration: 12s; animation-delay: 1s;"></div>
+    <div class="bubble" style="left: 85%; width: 50px; height: 50px; background: #10B981; animation-duration: 20s; animation-delay: 4s;"></div>
+  </div>
+
+  <!-- Header / Navigation Bar -->
+  <header class="main-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="logo-icon">🦉</div>
+        <div class="logo-text">
+          <h1>English Junior</h1>
+          <span>Materi Bahasa Inggris Kelas IV SD</span>
+        </div>
+      </div>
+
+      <div class="header-stats">
+        <!-- Profil Siswa (Nama & Avatar) -->
+        <button class="student-profile-badge" id="btn-user-profile" onclick="app.openLoginModal(true)" title="Profil Siswa - Klik untuk lihat / ganti profil">
+          <span class="student-avatar" id="header-avatar">🦁</span>
+          <div class="student-meta">
+            <span class="student-name" id="header-student-name">Siswa Juara</span>
+            <span class="student-class" id="header-student-class">Kelas IV</span>
+          </div>
+        </button>
+
+        <div class="stat-pill" title="Total Bintang Prestasi Kamu!">
+          <span class="star-icon">⭐</span>
+          <span id="star-count">0</span>
+          <span class="stat-pill-label" style="font-size: 0.85rem; font-weight: 600;">Bintang</span>
+        </div>
+        <button class="btn-icon-header" id="btn-mute-toggle" title="Nyalakan / Matikan Suara">🔊</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+
+    <!-- Hero Banner -->
+    <section class="hero-banner">
+      <div class="hero-content">
+        <h2>Hai Sahabat Juara! 👋 Let's Learn English!</h2>
+        <p>Ayo belajar kosakata baru, dengarkan suaranya, ikuti cara bacanya, dan kumpulkan bintang prestasimu!</p>
+        <div class="hero-badges">
+          <div class="hero-badge">🎨 Gambar Nyata & Seru</div>
+          <div class="hero-badge">🗣️ Suara Asli (Native Voice)</div>
+          <div class="hero-badge">🔤 Panduan Ejaan Huruf</div>
+          <div class="hero-badge">🇮🇩 Terjemahan Indonesia</div>
+        </div>
+      </div>
+      <div class="hero-mascot" id="hero-mascot" title="Klik aku untuk mendengarkan sapaan ceria!">
+        🦉
+      </div>
+    </section>
+
+    <!-- Navigasi Unit Materi (Tabs) -->
+    <div class="unit-scroll-wrapper">
+      <nav class="unit-nav" id="unit-nav-tabs">
+        <!-- Tab buttons akan di-render otomatis dari data.js -->
+      </nav>
+    </div>
+
+    <!-- Section Kontrol & Game Seru -->
+    <section class="section-header">
+      <div class="unit-info">
+        <h3 id="unit-title-display">Memuat Unit...</h3>
+        <p id="unit-desc-display">Memuat deskripsi materi...</p>
+      </div>
+
+      <!-- Tombol Permainan Edukasi -->
+      <div class="activity-buttons">
+        <button class="btn-game btn-game-spelling" onclick="app.openSpellingGame()">
+          <span>🔤</span> Susun Huruf (Spelling Bee)
+        </button>
+        <button class="btn-game btn-game-listen" onclick="app.openListenGame()">
+          <span>🎧</span> Tebak Suara & Gambar
+        </button>
+        <button class="btn-game btn-game-quiz" onclick="app.openQuizGame()">
+          <span>📝</span> Kuis Bintang 5 Soal
+        </button>
+      </div>
+    </section>
+
+    <!-- Grid Kartu Kosakata (Flashcards) -->
+    <section class="card-grid" id="vocab-card-grid">
+      <!-- Di-render oleh JavaScript -->
+    </section>
+
+  </main>
+
+  <!-- Modal Interaktif (Game Susun Ejaan, Tebak Suara, dan Kuis) -->
+  <div class="modal-overlay" id="modal-game">
+    <div class="modal-container">
+      <button class="modal-close-btn" id="modal-close-btn" title="Tutup Modal">&times;</button>
+      <div id="game-modal-body">
+        <!-- Konten Game dimuat dinamis -->
+      </div>
+    </div>
+  </div>
+
+  <!-- POPUP NOTIFIKASI BESAR & RAMAH ANAK (KID ALERT) -->
+  <div class="kid-alert-overlay" id="modal-kid-alert">
+    <div class="kid-alert-card type-warning" id="kid-alert-card">
+      <div class="kid-alert-icon-wrap" id="kid-alert-icon">🐰</div>
+      <div class="kid-alert-badge" id="kid-alert-badge">Ayo Belajar!</div>
+      <h3 class="kid-alert-title" id="kid-alert-title">Yuk Coba Lagi!</h3>
+      <p class="kid-alert-msg" id="kid-alert-msg">Susunan huruf belum pas, ayo coba sekali lagi!</p>
+      <div class="kid-alert-hint" id="kid-alert-hint">
+        <span>💡</span>
+        <span id="kid-alert-hint-text">Dengarkan suaranya pelan-pelan ya!</span>
+      </div>
+      <div class="kid-alert-actions">
+        <button class="kid-alert-btn-main" id="kid-alert-btn-action">
+          <span>🚀</span> <span id="kid-alert-btn-text">Ayo Coba Lagi!</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER FLOATING TOAST NOTIFICATION -->
+  <div class="kid-toast-container" id="kid-toast-container"></div>
+
+  <!-- MODAL LOGIN & PROFIL SISWA (ADAPTIVE LAPTOP/PC & HP) -->
+  <div class="modal-overlay" id="modal-login">
+    <div class="login-modal-wrapper">
+      <button class="modal-close-btn" id="modal-login-close-btn" title="Tutup Modal">&times;</button>
+      
+      <!-- DESKTOP / LAPTOP LEFT BANNER (Tampil di Laptop/PC) -->
+      <div class="login-banner-desktop">
+        <div class="login-mascot-circle">🦉</div>
+        <h3>Selamat Datang di English Junior!</h3>
+        <p>Aplikasi Belajar Bahasa Inggris Seru & Menyenangkan untuk Siswa Kelas IV SD.</p>
+        <div class="login-feature-list">
+          <div class="login-feat-item">
+            <span class="feat-icon">⭐</span>
+            <div><strong>Raih Bintang Prestasi</strong><br><small>Kumpulkan bintang setiap belajar</small></div>
+          </div>
+          <div class="login-feat-item">
+            <span class="feat-icon">🗣️</span>
+            <div><strong>Suara Asli (Native Voice)</strong><br><small>Dengarkan ejaan kata yang benar</small></div>
+          </div>
+          <div class="login-feat-item">
+            <span class="feat-icon">🎮</span>
+            <div><strong>3 Permainan Edukasi</strong><br><small>Spelling Bee, Tebak Gambar, & Kuis</small></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM LOGIN & PROFIL SISWA (ADAPTIF DESKTOP & HP) -->
+      <div class="login-form-area" id="login-form-area">
+        <!-- Konten form dimuat dinamis oleh app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION (KHUSUS TAMPILAN HP) -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+    <button class="mobile-nav-btn active" id="mob-nav-materi" onclick="app.switchMobileNav('materi')">
+      <span class="mob-icon">📚</span>
+      <span class="mob-label">Materi</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-nav-spelling" onclick="app.switchMobileNav('spelling')">
+      <span class="mob-icon">🔤</span>
+      <span class="mob-label">Ejaan</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-nav-listen" onclick="app.switchMobileNav('listen')">
+      <span class="mob-icon">🎧</span>
+      <span class="mob-label">Tebak</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-nav-quiz" onclick="app.switchMobileNav('quiz')">
+      <span class="mob-icon">📝</span>
+      <span class="mob-label">Kuis</span>
+    </button>
+    <button class="mobile-nav-btn" id="mob-nav-profile" onclick="app.switchMobileNav('profile')">
+      <span class="mob-icon" id="mob-nav-avatar">🦁</span>
+      <span class="mob-label">Profil</span>
+    </button>
+  </nav>
+
+  <!-- Footer -->
+  <footer class="footer-area">
+    <p>🌟 <strong>English Junior LMS</strong> - Media Belajar Bahasa Inggris Interaktif Kelas IV SD 🌟</p>
+    <p style="margin-top: 6px; font-size: 0.8rem;">Dibuat ramah anak dengan audio visual interaktif & Kurikulum Merdeka Indonesia</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
