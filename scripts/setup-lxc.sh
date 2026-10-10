@@ -68,8 +68,10 @@ cat << 'EOF' > /usr/local/bin/update-lms
 #!/bin/bash
 set -e
 echo "🔄 Mengunduh versi terbaru LMS Bahasa Inggris..."
+git config --global --add safe.directory /var/www/bahasa-inggris 2>/dev/null || true
 cd /var/www/bahasa-inggris
-git pull origin main
+git fetch origin main
+git reset --hard origin/main
 chown -R www-data:www-data /var/www/bahasa-inggris
 chmod -R 755 /var/www/bahasa-inggris
 systemctl reload nginx

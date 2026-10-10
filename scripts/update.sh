@@ -10,6 +10,9 @@ APP_DIR="/var/www/bahasa-inggris"
 echo "🔄 [1/3] Menarik perubahan terbaru dari repository GitHub..."
 cd "$APP_DIR" || { echo "❌ Direktori $APP_DIR tidak ditemukan!"; exit 1; }
 
+# Pastikan git mengizinkan root mengelola repositori milik www-data
+git config --global --add safe.directory "$APP_DIR" 2>/dev/null || true
+
 git fetch origin main
 git reset --hard origin/main
 

@@ -224,19 +224,24 @@ Jika ada pembaruan modul materi baru, perbaikan kata, atau fitur baru yang di-pu
 Masuk ke terminal LXC Container dan jalankan perintah satu baris berikut:
 
 ```bash
-cd /var/www/bahasa-inggris && git pull origin main && chown -R www-data:www-data /var/www/bahasa-inggris && systemctl reload nginx
+git config --global --add safe.directory /var/www/bahasa-inggris && cd /var/www/bahasa-inggris && git fetch origin main && git reset --hard origin/main && chown -R www-data:www-data /var/www/bahasa-inggris && systemctl reload nginx
 ```
 
 ---
 
-### Cara 2: Update Bersih (Jika Terjadi Konflik File Lokal)
-Jika Anda sempat mengubah file secara manual di server dan ingin menyamakan persis dengan repositori GitHub:
-
+### Cara 2: Update Bertahap (Bebas Error Dubious Ownership)
 ```bash
+# 1. Izinkan root mengelola folder www-data (cukup jalankan sekali)
+git config --global --add safe.directory /var/www/bahasa-inggris
+
+# 2. Masuk ke direktori dan sinkronkan dengan GitHub
 cd /var/www/bahasa-inggris
 git fetch origin main
 git reset --hard origin/main
+
+# 3. Kembalikan hak akses ke www-data dan reload web server
 chown -R www-data:www-data /var/www/bahasa-inggris
+chmod -R 755 /var/www/bahasa-inggris
 systemctl reload nginx
 ```
 
@@ -252,8 +257,10 @@ cat << 'EOF' > /usr/local/bin/update-lms
 #!/bin/bash
 set -e
 echo "🔄 Memeriksa & Mengunduh Update LMS Bahasa Inggris..."
+git config --global --add safe.directory /var/www/bahasa-inggris 2>/dev/null || true
 cd /var/www/bahasa-inggris
-git pull origin main
+git fetch origin main
+git reset --hard origin/main
 chown -R www-data:www-data /var/www/bahasa-inggris
 chmod -R 755 /var/www/bahasa-inggris
 systemctl reload nginx
