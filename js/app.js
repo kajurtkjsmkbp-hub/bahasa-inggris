@@ -414,27 +414,36 @@ class EnglishLMSApp {
     }).join('');
   }
 
-  // ================= GAME 1: SPELLING BEE (SUSUN HURUF) =================
-  openSpellingGame() {
+  // ================= GAME 1: SPELLING BEE (SUSUN HURUF - 100 KATA PER UNIT) =================
+  openSpellingGame(itemIndex = null) {
     this.audio.playTone('pop');
     const currentUnit = this.getCurrentUnit();
-    // Ambil kata acak dari unit saat ini (prioritaskan 1 kata per item)
-    const items = currentUnit.items;
-    const randomItem = items[Math.floor(Math.random() * items.length)];
+    const unitId = currentUnit.id;
+
+    // Ambil daftar kata dari lmsGameBank jika tersedia (100 kata), fallback ke currentUnit.items
+    let items = (typeof lmsGameBank !== 'undefined' && lmsGameBank.spelling && lmsGameBank.spelling[unitId]) ?
+      lmsGameBank.spelling[unitId] : currentUnit.items;
+
+    // Tentukan item yang dimainkan
+    let activeIndex = (itemIndex !== null && itemIndex >= 0 && itemIndex < items.length) ?
+      itemIndex : Math.floor(Math.random() * items.length);
+    const currentItem = items[activeIndex];
 
     // Target kata (bersihkan karakter non-huruf untuk dieja)
-    const cleanWord = randomItem.english.replace(/[^a-zA-Z]/g, '').toUpperCase();
+    const cleanWord = currentItem.english.replace(/[^a-zA-Z]/g, '').toUpperCase();
     const targetLetters = cleanWord.split('');
 
-    // Acak huruf-hurufnya untuk pilihan
+    // Acak huruf-hurufnya untuk pilihan anak
     const shuffledLetters = [...targetLetters].sort(() => Math.random() - 0.5);
 
     this.spellingGameState = {
-      item: randomItem,
+      item: currentItem,
       cleanWord: cleanWord,
       targetLetters: targetLetters,
       enteredLetters: [],
-      availableButtons: shuffledLetters.map((char, index) => ({ id: index, char: char, used: false }))
+      availableButtons: shuffledLetters.map((char, index) => ({ id: index, char: char, used: false })),
+      currentIndex: activeIndex,
+      totalCount: items.length
     };
 
     const modal = document.getElementById('modal-game');
@@ -446,7 +455,7 @@ class EnglishLMSApp {
 
     // Suarakan kata di awal
     setTimeout(() => {
-      this.audio.speak(randomItem.english);
+      this.audio.speak(currentItem.english);
     }, 400);
   }
 
@@ -454,19 +463,26 @@ class EnglishLMSApp {
     const state = this.spellingGameState;
     if (!state) return;
 
+    const currentUnit = this.getCurrentUnit();
+    const itemNumber = (state.currentIndex !== undefined) ? state.currentIndex + 1 : (state.item.number || 1);
+    const totalItems = state.totalCount || 100;
+
     container.innerHTML = `
       <div class="modal-title-area">
-        <span class="modal-badge">🎮 Mini Game 1</span>
+        <span class="modal-badge" style="background: #E0E7FF; color: #4338CA;">🔤 Susun Huruf • Kata #${itemNumber} dari ${totalItems} (${currentUnit.number})</span>
         <h3 class="modal-title">Susun Ejaan Huruf (Spelling Bee)</h3>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">Dengarkan dan susun huruf-huruf menjadi kata bahasa Inggris yang tepat!</p>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Dengarkan bunyinya lalu susun huruf-huruf menjadi kata yang benar!</p>
       </div>
 
       <div class="spelling-game-area">
         <img src="${state.item.image}" alt="${state.item.english}" class="spelling-prompt-img" onerror="this.src='https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400';">
-        <div class="spelling-clue-id">🇮🇩 Artinya: "${state.item.indonesian}"</div>
+        <div class="spelling-clue-id">
+          <span style="font-size: 1.4rem;">${state.item.emoji || '✨'}</span> 
+          <strong>${state.item.english}</strong>: "${state.item.indonesian}"
+        </div>
         
-        <button class="btn-audio-main" style="margin: 0 auto 18px; width: fit-content;" onclick="app.audio.speak('${state.item.english}')">
-          <span>🔊</span> Dengarkan Kata
+        <button class="btn-audio-main" style="margin: 0 auto 18px; width: fit-content;" onclick="app.audio.speak('${state.item.english.replace(/'/g, "\\'")}')">
+          <span>🔊</span> Dengarkan Pelafalan
         </button>
 
         <!-- Kotak Huruf Hasil Susunan -->
@@ -486,16 +502,25 @@ class EnglishLMSApp {
           `).join('')}
         </div>
 
-        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap;">
           <button class="btn-game" onclick="app.resetSpellingCurrentWord()">
             <span>🔄</span> Ulangi Susunan
           </button>
-          <button class="btn-game btn-game-spelling" onclick="app.openSpellingGame()">
-            <span>➡️</span> Kata Lainnya
+          <button class="btn-game btn-game-spelling" onclick="app.nextSpellingWord()">
+            <span>➡️</span> Kata Berikutnya (${itemNumber < totalItems ? '#' + (itemNumber + 1) : 'Acak'})
           </button>
         </div>
       </div>
     `;
+  }
+
+  nextSpellingWord() {
+    if (!this.spellingGameState) {
+      this.openSpellingGame();
+      return;
+    }
+    const nextIdx = (this.spellingGameState.currentIndex + 1) % this.spellingGameState.totalCount;
+    this.openSpellingGame(nextIdx);
   }
 
   pickLetter(buttonId) {
@@ -523,7 +548,14 @@ class EnglishLMSApp {
         setTimeout(() => {
           this.audio.playTone('correct');
           this.addStars(2);
-          this.showCelebration(container, "Hebat Sekali! Ejaanmu Tepat!", state.item.english, 2, () => this.openSpellingGame());
+          const nextIdx = (state.currentIndex + 1) % state.totalCount;
+          this.showCelebration(
+            container, 
+            "Hebat Sekali! Ejaanmu Tepat!", 
+            `${state.item.english} (${state.item.indonesian})`, 
+            2, 
+            () => this.openSpellingGame(nextIdx)
+          );
         }, 300);
       } else {
         // Jawaban Salah
@@ -532,7 +564,7 @@ class EnglishLMSApp {
           this.showKidAlert({
             title: "Ups, Sedikit Lagi! 🌟",
             message: `Susunan huruf untuk kata "${state.item.english}" belum pas nih.`,
-            hint: `Artinya: "${state.item.indonesian}". Ayo perhatikan bunyi hurufnya ya!`,
+            hint: `Artinya: "${state.item.indonesian}". Ayo dengarkan dan perhatikan kembali hurufnya!`,
             icon: "🐱",
             type: "warning",
             badge: "Semangat Belajar! 💪",
@@ -555,23 +587,31 @@ class EnglishLMSApp {
     this.renderSpellingGameUI(container);
   }
 
-  // ================= GAME 2: LISTEN & GUESS (TEBAK GAMBAR) =================
-  openListenGame() {
+  // ================= GAME 2: LISTEN & GUESS (TEBAK SUARA & GAMBAR - 100 SOAL PER UNIT) =================
+  openListenGame(itemIndex = null) {
     this.audio.playTone('pop');
     const currentUnit = this.getCurrentUnit();
-    const items = currentUnit.items;
-    
-    // Pilih 1 target
-    const targetItem = items[Math.floor(Math.random() * items.length)];
+    const unitId = currentUnit.id;
 
-    // Pilih 3 pengalih (distractors)
+    // Ambil daftar kosakata 100 item dari lmsGameBank
+    let items = (typeof lmsGameBank !== 'undefined' && lmsGameBank.listen && lmsGameBank.listen[unitId]) ?
+      lmsGameBank.listen[unitId] : currentUnit.items;
+
+    // Tentukan item target
+    let activeIndex = (itemIndex !== null && itemIndex >= 0 && itemIndex < items.length) ?
+      itemIndex : Math.floor(Math.random() * items.length);
+    const targetItem = items[activeIndex];
+
+    // Pilih 3 pengalih (distractors) secara acak dari 99 item lainnya
     const others = items.filter(i => i.id !== targetItem.id);
     const shuffledOthers = [...others].sort(() => Math.random() - 0.5).slice(0, 3);
     const options = [targetItem, ...shuffledOthers].sort(() => Math.random() - 0.5);
 
     this.listenGameState = {
       target: targetItem,
-      options: options
+      options: options,
+      currentIndex: activeIndex,
+      totalCount: items.length
     };
 
     const modal = document.getElementById('modal-game');
@@ -591,29 +631,46 @@ class EnglishLMSApp {
     const state = this.listenGameState;
     if (!state) return;
 
+    const currentUnit = this.getCurrentUnit();
+    const qNumber = (state.currentIndex !== undefined) ? state.currentIndex + 1 : 1;
+    const totalCount = state.totalCount || 100;
+
     container.innerHTML = `
       <div class="modal-title-area">
-        <span class="modal-badge" style="background: #FDF4FF; color: #A21CAF;">🎧 Mini Game 2</span>
-        <h3 class="modal-title">Dengar & Tebak Gambar (Listen & Choose)</h3>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">Tekan tombol speaker, lalu pilih gambar yang tepat!</p>
+        <span class="modal-badge" style="background: #FDF4FF; color: #A21CAF;">🎧 Tebak Suara • Soal #${qNumber} dari ${totalCount} (${currentUnit.number})</span>
+        <h3 class="modal-title">Dengar & Tebak Pilihan (Listen & Match)</h3>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Tekan tombol speaker untuk mendengarkan, lalu pilih kartu kata yang cocok!</p>
       </div>
 
-      <div style="text-align: center; margin-bottom: 24px;">
-        <button class="btn-audio-main" style="margin: 0 auto; padding: 14px 28px; font-size: 1.15rem;" onclick="app.audio.speak('${state.target.english}')">
+      <div style="text-align: center; margin-bottom: 24px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <button class="btn-audio-main" style="padding: 14px 28px; font-size: 1.15rem;" onclick="app.audio.speak('${state.target.english.replace(/'/g, "\\'")}')">
           <span>🔊</span> Putar Suara Lagi
+        </button>
+        <button class="btn-game" onclick="app.nextListenGame()">
+          <span>➡️</span> Soal Berikutnya (${qNumber < totalCount ? '#' + (qNumber + 1) : 'Acak'})
         </button>
       </div>
 
       <div class="listen-grid">
         ${state.options.map(opt => `
           <div class="listen-card-option" onclick="app.checkListenAnswer('${opt.id}')">
-            <img src="${opt.image}" alt="${opt.english}" onerror="this.src='https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400';">
+            <div style="font-size: 3rem; margin-bottom: 8px;">${opt.emoji || '✨'}</div>
+            <img src="${opt.image}" alt="${opt.english}" onerror="this.src='https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400';" style="max-height: 120px; object-fit: cover; border-radius: 12px; margin-bottom: 8px;">
             <div class="option-text">${opt.english}</div>
-            <div style="font-size: 0.85rem; color: #059669; font-weight: 600;">🇮🇩 ${opt.indonesian}</div>
+            <div style="font-size: 0.88rem; color: #059669; font-weight: 600;">🇮🇩 ${opt.indonesian}</div>
           </div>
         `).join('')}
       </div>
     `;
+  }
+
+  nextListenGame() {
+    if (!this.listenGameState) {
+      this.openListenGame();
+      return;
+    }
+    const nextIdx = (this.listenGameState.currentIndex + 1) % this.listenGameState.totalCount;
+    this.openListenGame(nextIdx);
   }
 
   checkListenAnswer(selectedId) {
@@ -625,12 +682,19 @@ class EnglishLMSApp {
     if (selectedId === state.target.id) {
       this.audio.playTone('correct');
       this.addStars(2);
-      this.showCelebration(container, "Pintar! Tebakan Gambarmu Tepat!", `${state.target.english} (${state.target.indonesian})`, 2, () => this.openListenGame());
+      const nextIdx = (state.currentIndex + 1) % state.totalCount;
+      this.showCelebration(
+        container, 
+        "Pintar! Tebakan Gambarmu Tepat!", 
+        `${state.target.english} (${state.target.indonesian})`, 
+        2, 
+        () => this.openListenGame(nextIdx)
+      );
     } else {
       this.audio.playTone('wrong');
       this.showKidAlert({
         title: "Belum Tepat, Sahabat Juara! 🎧",
-        message: "Gambar yang kamu pilih belum cocok dengan suara kata tadi.",
+        message: "Pilihan yang kamu pilih belum cocok dengan suara kata tadi.",
         hint: `Kata yang sedang dicari adalah: "${state.target.english}" (${state.target.indonesian}).`,
         icon: "🐰",
         type: "warning",
