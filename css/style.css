@@ -866,15 +866,28 @@ body {
 /* Quiz Mode Selection */
 .quiz-mode-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 12px;
   margin: 20px 0;
 }
 
 @media (max-width: 600px) {
   .quiz-mode-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.quiz-category-tag {
+  background: #EEF2FF;
+  color: #4F46E5;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(79, 70, 229, 0.25);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .quiz-mode-card {

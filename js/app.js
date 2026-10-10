@@ -568,32 +568,42 @@ class EnglishLMSApp {
     const currentUnit = this.getCurrentUnit();
     container.innerHTML = `
       <div class="modal-title-area">
-        <span class="modal-badge" style="background: #FEF3C7; color: #B45309;">📝 Kuis Pintar Kelas IV SD</span>
+        <span class="modal-badge" style="background: #FEF3C7; color: #B45309;">📝 Bank Soal: 100 Soal Per Unit (Total 1.000 Soal)</span>
         <h3 class="modal-title">Pilih Tantangan Kuis Kamu!</h3>
-        <p style="color: var(--text-muted); font-size: 0.95rem;">Soal bervariasi: arti kata, terjemahan, lengkapi kalimat, dan tebak ejaan huruf!</p>
+        <p style="color: var(--text-muted); font-size: 0.95rem;">Tersedia 100 soal bervariasi per unit: Arti Kata, Terjemahan, Kalimat Rumpang, Ejaan, Visual, Percakapan, Benar/Salah, Pasangan Kata, Grammar, & Kasus Nyata!</p>
       </div>
 
       <div class="quiz-mode-grid">
-        <div class="quiz-mode-card" onclick="app.openQuizGame(5, 'unit')">
+        <div class="quiz-mode-card" onclick="app.openQuizGame(10, 'unit')">
           <div class="mode-icon">⚡</div>
           <div class="mode-title">Kuis Kilat</div>
-          <div class="mode-desc">5 Soal Cepat (${currentUnit.number})</div>
+          <div class="mode-desc">10 Soal Acak (${currentUnit.number})</div>
         </div>
-        <div class="quiz-mode-card" onclick="app.openQuizGame(10, 'unit')" style="border-color: #6366F1; background: #EEF2FF;">
+        <div class="quiz-mode-card" onclick="app.openQuizGame(25, 'unit')">
           <div class="mode-icon">🌟</div>
-          <div class="mode-title">Kuis Juara</div>
-          <div class="mode-desc">10 Soal Lengkap (${currentUnit.number})</div>
+          <div class="mode-title">Tantangan 25</div>
+          <div class="mode-desc">25 Soal Modul (${currentUnit.number})</div>
         </div>
-        <div class="quiz-mode-card" onclick="app.openQuizGame(10, 'all')">
+        <div class="quiz-mode-card" onclick="app.openQuizGame(50, 'unit')">
+          <div class="mode-icon">🏅</div>
+          <div class="mode-title">Latihan Ujian</div>
+          <div class="mode-desc">50 Soal Intensif (${currentUnit.number})</div>
+        </div>
+        <div class="quiz-mode-card" onclick="app.openQuizGame(100, 'unit')" style="border-color: #6366F1; background: #EEF2FF;">
+          <div class="mode-icon">💯</div>
+          <div class="mode-title">Maraton 100 Soal</div>
+          <div class="mode-desc">Semua 100 Soal Lengkap Unit!</div>
+        </div>
+        <div class="quiz-mode-card" onclick="app.openQuizGame(25, 'all')" style="border-color: #F59E0B; background: #FEF3C7;">
           <div class="mode-icon">🏆</div>
           <div class="mode-title">Grand Challenge</div>
-          <div class="mode-desc">10 Soal Campuran Semua Unit!</div>
+          <div class="mode-desc">25 Soal Campuran 10 Unit</div>
         </div>
       </div>
 
       <div style="text-align: center; margin-top: 10px;">
         <p style="font-size: 0.85rem; color: #059669; font-weight: 700;">
-          💡 Setiap soal yang benar akan mendapatkan 2 Bintang Emas ⭐!
+          💡 Setiap soal yang benar akan mendapatkan 2 Bintang Emas ⭐! Total 100 Soal Tersedia di Unit Ini.
         </p>
       </div>
     `;
@@ -601,102 +611,53 @@ class EnglishLMSApp {
 
   startQuizWithCount(count, mode, container) {
     let pool = [];
+    const currentUnitId = this.getCurrentUnit().id;
+
     if (mode === 'all') {
-      lmsData.units.forEach(u => pool.push(...u.items));
+      if (typeof lmsQuestionBank !== 'undefined') {
+        Object.values(lmsQuestionBank).forEach(qList => pool.push(...qList));
+      }
     } else {
-      pool = [...this.getCurrentUnit().items];
+      if (typeof lmsQuestionBank !== 'undefined' && lmsQuestionBank[currentUnitId]) {
+        pool = [...lmsQuestionBank[currentUnitId]];
+      }
     }
 
-    // Acak item
-    const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
-    const selectedItems = shuffledPool.slice(0, Math.min(count, shuffledPool.length));
-
-    // Siapkan soal dengan 4 model variasi
-    const questions = selectedItems.map((item, idx) => {
-      const qTypes = ['en_to_id', 'id_to_en', 'fill_blank', 'spelling'];
-      const qType = qTypes[idx % qTypes.length];
-
-      // Ambil 3 distractors
-      const wrongItems = pool.filter(i => i.id !== item.id).sort(() => Math.random() - 0.5).slice(0, 3);
-
-      if (qType === 'en_to_id') {
-        const choices = [
+    // Jika question bank belum termuat, fallback ke generator lama
+    if (pool.length === 0) {
+      const unitItems = (mode === 'all') ? 
+        lmsData.units.flatMap(u => u.items) : 
+        [...this.getCurrentUnit().items];
+      
+      pool = unitItems.map(item => ({
+        item: item,
+        category: "Arti Kosakata",
+        categoryIcon: "📖",
+        titleText: `Apa arti bahasa Indonesia dari:`,
+        highlightText: item.english,
+        subText: null,
+        image: item.image,
+        hasAudio: true,
+        audioText: item.english,
+        choices: [
           { text: item.indonesian, emoji: item.emoji, isCorrect: true },
-          ...wrongItems.map(w => ({ text: w.indonesian, emoji: w.emoji, isCorrect: false }))
-        ].sort(() => Math.random() - 0.5);
+          ...unitItems.filter(x => x.id !== item.id).slice(0, 3).map(w => ({ text: w.indonesian, emoji: w.emoji, isCorrect: false }))
+        ].sort(() => Math.random() - 0.5),
+        explanation: `"${item.english}" artinya "${item.indonesian}".`
+      }));
+    }
 
-        return {
-          item: item,
-          type: qType,
-          titleText: `Apa arti bahasa Indonesia dari:`,
-          highlightText: item.english,
-          subText: null,
-          hasAudio: true,
-          choices: choices,
-          explanation: `"${item.english}" artinya "${item.indonesian}". Ejaannya: ${item.spelling}.`
-        };
-      } else if (qType === 'id_to_en') {
-        const choices = [
-          { text: item.english, emoji: item.emoji, isCorrect: true },
-          ...wrongItems.map(w => ({ text: w.english, emoji: w.emoji, isCorrect: false }))
-        ].sort(() => Math.random() - 0.5);
+    // Acak pool soal
+    const shuffledPool = [...pool].sort(() => Math.random() - 0.5);
+    const selectedQuestions = shuffledPool.slice(0, Math.min(count, shuffledPool.length));
 
-        return {
-          item: item,
-          type: qType,
-          titleText: `Apa bahasa Inggris untuk:`,
-          highlightText: item.indonesian,
-          subText: null,
-          hasAudio: false,
-          choices: choices,
-          explanation: `Bahasa Inggris dari "${item.indonesian}" adalah "${item.english}". Pelafalan: "${item.easyPronounce}".`
-        };
-      } else if (qType === 'fill_blank') {
-        const blankSentence = item.exampleEn.replace(new RegExp(item.english, 'i'), '__________');
-        const choices = [
-          { text: item.english, emoji: item.emoji, isCorrect: true },
-          ...wrongItems.map(w => ({ text: w.english, emoji: w.emoji, isCorrect: false }))
-        ].sort(() => Math.random() - 0.5);
-
-        return {
-          item: item,
-          type: qType,
-          titleText: `Lengkapilah kalimat berikut ini:`,
-          highlightText: `"${blankSentence}"`,
-          subText: `Artinya: "${item.exampleId}"`,
-          hasAudio: false,
-          choices: choices,
-          explanation: `Kalimat lengkap: "${item.exampleEn}". Artinya: "${item.exampleId}".`
-        };
-      } else {
-        // Spelling Challenge
-        const clean = item.english.replace(/[^A-Za-z]/g, '').toUpperCase();
-        const makeTypo = (str, offset) => {
-          if (str.length < 3) return str + 'X';
-          const arr = str.split('');
-          const i = (offset) % arr.length;
-          arr[i] = arr[i] === 'E' ? 'A' : (arr[i] === 'O' ? 'U' : 'E');
-          return arr.join(' - ');
-        };
-
-        const choices = [
-          { text: item.spelling, emoji: '🔤', isCorrect: true },
-          { text: makeTypo(clean, 1), emoji: '🔤', isCorrect: false },
-          { text: makeTypo(clean, 2), emoji: '🔤', isCorrect: false },
-          { text: makeTypo(clean, 3), emoji: '🔤', isCorrect: false }
-        ].sort(() => Math.random() - 0.5);
-
-        return {
-          item: item,
-          type: qType,
-          titleText: `Manakah ejaan huruf (Spelling) yang BENAR untuk:`,
-          highlightText: item.english,
-          subText: `Artinya: "${item.indonesian}"`,
-          hasAudio: true,
-          choices: choices,
-          explanation: `Ejaan huruf yang tepat untuk "${item.english}" adalah: ${item.spelling}.`
-        };
-      }
+    // Siapkan soal dan acak pilihan jawaban (choices)
+    const questions = selectedQuestions.map(q => {
+      const choices = q.choices ? [...q.choices].sort(() => Math.random() - 0.5) : [];
+      return {
+        ...q,
+        choices: choices
+      };
     });
 
     this.quizGameState = {
@@ -715,26 +676,32 @@ class EnglishLMSApp {
 
     const q = state.questions[state.currentIndex];
     const progressPercent = ((state.currentIndex) / state.questions.length) * 100;
+    const categoryBadge = q.category ? `<span class="quiz-category-tag">${q.categoryIcon || '🎯'} ${q.category}</span>` : '';
+    const imgUrl = (q.item && q.item.image) ? q.item.image : (q.image || 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400');
+    const audioText = q.audioText || (q.item ? q.item.english : null);
 
     container.innerHTML = `
       <div class="modal-title-area">
-        <span class="modal-badge" style="background: #FEF3C7; color: #B45309;">📝 Soal ${state.currentIndex + 1} dari ${state.questions.length}</span>
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+          <span class="modal-badge" style="background: #FEF3C7; color: #B45309;">📝 Soal ${state.currentIndex + 1} dari ${state.questions.length}</span>
+          ${categoryBadge}
+        </div>
         <div class="quiz-progress-wrapper">
           <div class="quiz-progress-fill" style="width: ${progressPercent}%;"></div>
         </div>
       </div>
 
       <div style="text-align: center; margin-bottom: 18px;">
-        <img src="${q.item.image}" alt="Soal" style="width: 140px; height: 110px; object-fit: cover; border-radius: 14px; border: 3px solid #E0E7FF; margin-bottom: 10px;" onerror="this.src='https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400';">
+        <img src="${imgUrl}" alt="Soal" style="width: 140px; height: 110px; object-fit: cover; border-radius: 14px; border: 3px solid #E0E7FF; margin-bottom: 10px;" onerror="this.src='https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400';">
         <p style="font-size: 1rem; color: var(--text-muted); font-weight: 600;">${q.titleText}</p>
         <div style="font-size: 1.35rem; font-weight: 800; color: #4F46E5; margin: 4px 0;">
           ${q.highlightText}
         </div>
         ${q.subText ? `<p style="font-size: 0.9rem; color: #059669; font-style: italic; margin-bottom: 8px;">${q.subText}</p>` : ''}
         
-        ${q.hasAudio ? `
-          <button class="btn-audio-main" style="margin: 8px auto; padding: 6px 16px; font-size: 0.85rem;" onclick="app.audio.speak('${q.item.english}')">
-            <span>🔊</span> Dengarkan Kata
+        ${(q.hasAudio && audioText) ? `
+          <button class="btn-audio-main" style="margin: 8px auto; padding: 6px 16px; font-size: 0.85rem;" onclick="app.audio.speak('${audioText.replace(/'/g, "\\'")}')">
+            <span>🔊</span> Dengarkan Suara
           </button>
         ` : ''}
       </div>
@@ -743,7 +710,7 @@ class EnglishLMSApp {
         ${q.choices.map((choice, idx) => `
           <button class="quiz-option-btn" id="quiz-opt-${idx}" onclick="app.answerQuiz(${idx})">
             <span>${['A', 'B', 'C', 'D'][idx]}. ${choice.text}</span>
-            <span style="font-size: 1.2rem;">${choice.emoji}</span>
+            <span style="font-size: 1.2rem;">${choice.emoji || ''}</span>
           </button>
         `).join('')}
       </div>

@@ -19,20 +19,31 @@ Website Media Belajar Interaktif Bahasa Inggris untuk Siswa-Siswi **Kelas IV Sek
 
 ---
 
-## 📝 Sistem Kuis Pintar Multi-Variasi & Edukatif:
+## 📝 Bank Soal Pintar: 100 Soal Per Unit (Total 1.000 Soal Lengkap):
 
-Untuk membantu siswa **mengerti lebih cepat dan memahami materi secara mendalam**, sistem kuis kini diperkaya dengan:
-1. **Pilihan Jumlah Soal**:
-   - ⚡ **Kuis Kilat**: 5 Soal Cepat dari unit materi.
-   - 🌟 **Kuis Juara**: 10 Soal Lengkap dari unit materi.
-   - 🏆 **Grand Challenge**: 10 Soal Campuran dari SELURUH 10 Unit materi.
-2. **4 Tipe Model Soal yang Bervariasi**:
-   - **Tipe 1 (English ➔ Indonesian)**: Menentukan arti kata bahasa Inggris.
-   - **Tipe 2 (Indonesian ➔ English)**: Menentukan istilah bahasa Inggris yang tepat.
+Untuk membantu siswa **mengerti lebih cepat, tidak bosan, dan memahami materi secara mendalam**, sistem kuis kini dilengkapi dengan bank soal raksasa: **100 Soal di Setiap Unit** (Total 1.000 Soal di 10 Unit):
+
+1. **Pilihan Jumlah Soal Fleksibel**:
+   - ⚡ **Kuis Kilat**: 10 Soal Acak Cepat dari unit materi.
+   - 🌟 **Tantangan 25**: 25 Soal Modul pilihan.
+   - 🏅 **Latihan Ujian**: 50 Soal Intensif persiapan ulangan.
+   - 💯 **Maraton 100 Soal**: Menjawab SELURUH 100 Soal Lengkap di unit tersebut!
+   - 🏆 **Grand Challenge**: 25 Soal Campuran dari SELURUH 10 Unit materi.
+
+2. **10 Model Variasi Tipe Soal (Super Variatif)**:
+   - **Tipe 1 (Arti Kosakata En ➔ Id)**: Menentukan arti kata bahasa Inggris dalam konteks kalimat.
+   - **Tipe 2 (Terjemahan Istilah Id ➔ En)**: Menentukan istilah bahasa Inggris yang tepat dari bahasa Indonesia.
    - **Tipe 3 (Lengkapi Kalimat / Contextual Fill-in)**: Melengkapi kalimat rumpang beserta arti kalimatnya.
    - **Tipe 4 (Tantangan Ejaan / Spelling Bee)**: Menentukan urutan ejaan huruf yang benar.
+   - **Tipe 5 (Tebak Visual & Ikon Gambar)**: Menjodohkan gambar nyata dan ikon emoji dengan kosakata.
+   - **Tipe 6 (Percakapan Sehari-hari / Dialogue)**: Melengkapi dialog tanya-jawab singkat kontekstual.
+   - **Tipe 7 (Benar atau Salah / True or False)**: Menilai kebenaran pernyataan logika materi bahasa Inggris.
+   - **Tipe 8 (Pasangan Kata & Karakteristik)**: Menghubungkan fungsi alat, pasangan kata, atau matematika dasar.
+   - **Tipe 9 (Tata Bahasa / Grammar Dasar SD)**: Latihan to be (am/is/are), kata sandang (a/an), dan preposisi.
+   - **Tipe 10 (Situasi Nyata & Logika Kasus)**: Menerapkan bahasa Inggris pada situasi nyata sehari-hari siswa.
+
 3. **Penjelasan Edukatif Instan**:
-   - Setiap kali siswa menjawab, sistem langsung menampilkan **kotak penjelasan lengkap** (arti kata, ejaan, dan audio) sehingga siswa langsung paham sebelum lanjut ke nomor berikutnya.
+   - Setiap kali siswa menjawab, sistem langsung menampilkan **kotak penjelasan lengkap** (arti kata, alasan jawaban benar, ejaan, dan tombol audio) sehingga siswa langsung paham sebelum lanjut ke nomor berikutnya.
 
 ---
 
