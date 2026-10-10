@@ -212,14 +212,14 @@ class EnglishLMSApp {
 
     gridEl.innerHTML = '';
 
-    currentUnit.items.forEach(item => {
+    currentUnit.items.forEach((item, index) => {
       const card = document.createElement('div');
       card.className = 'vocab-card';
       card.id = `card-${item.id}`;
 
       card.innerHTML = `
         <div class="card-media-wrapper">
-          <span class="card-badge">${currentUnit.subtitle}</span>
+          <span class="card-badge">#${index + 1} • ${currentUnit.subtitle}</span>
           <img src="${item.image}" alt="${item.english}" class="card-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
           <span class="fallback-emoji" style="display: none;">${item.emoji}</span>
         </div>
