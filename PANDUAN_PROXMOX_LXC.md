@@ -101,6 +101,9 @@ pct create 105 /var/lib/vz/template/cache/debian-12-standard_12.7-1_amd64.tar.zs
 ```bash
 apt update && apt upgrade -y
 apt install -y git nginx curl nano
+
+# Daftarkan direktori web agar user root dapat mengelola git tanpa error dubious ownership
+git config --global --add safe.directory /var/www/bahasa-inggris
 ```
 
 4. Pastikan layanan Nginx berjalan dan aktif saat boot:
@@ -316,6 +319,13 @@ bash scripts/setup-lxc.sh
 - Cek pemakaian disk di dalam container: `df -h /`
 - Bersihkan cache paket apt: `apt clean && rm -rf /var/lib/apt/lists/*`
 - Jika butuh memperbesar disk, Anda dapat me-resize langsung dari Proxmox Web GUI (**LXC** > **Resources** > **Root Disk** > **Volume Action** > **Resize**).
+
+### 4. Muncul Pesan "fatal: detected dubious ownership"
+- Masalah ini terjadi karena folder `/var/www/bahasa-inggris` dimiliki oleh user web `www-data`, sementara perintah git dijalankan oleh user `root`.
+- **Solusi Cepat:** Daftarkan folder tersebut ke konfigurasi git root:
+  ```bash
+  git config --global --add safe.directory /var/www/bahasa-inggris
+  ```
 
 ---
 *Dibuat untuk memudahkan deploy media pembelajaran interaktif bagi siswa dan guru.*

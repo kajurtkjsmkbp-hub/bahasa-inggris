@@ -11,6 +11,8 @@ apt install -y nginx git curl nano
 
 echo "🌐 [2/5] Mengatur hak akses direktori /var/www/bahasa-inggris..."
 APP_DIR="/var/www/bahasa-inggris"
+git config --global --add safe.directory "$APP_DIR" 2>/dev/null || true
+
 if [ ! -d "$APP_DIR" ]; then
     echo "Direktori $APP_DIR tidak ditemukan. Mengkloning dari GitHub..."
     git clone https://github.com/kajurtkjsmkbp-hub/bahasa-inggris.git "$APP_DIR"

@@ -59,6 +59,7 @@ Panduan lengkap instalasi bertahap dan cara update dapat dibaca di berkas:
 ### Quick Setup di Terminal LXC:
 ```bash
 apt update && apt install -y git
+git config --global --add safe.directory /var/www/bahasa-inggris
 git clone https://github.com/kajurtkjsmkbp-hub/bahasa-inggris.git /var/www/bahasa-inggris
 cd /var/www/bahasa-inggris
 bash scripts/setup-lxc.sh
@@ -68,4 +69,7 @@ bash scripts/setup-lxc.sh
 ```bash
 update-lms
 ```
-*(atau jalankan `bash /var/www/bahasa-inggris/scripts/update.sh`)*
+*(atau jalankan satu baris perintah manual ini):*
+```bash
+git config --global --add safe.directory /var/www/bahasa-inggris && cd /var/www/bahasa-inggris && git fetch origin main && git reset --hard origin/main && chown -R www-data:www-data /var/www/bahasa-inggris && systemctl reload nginx
+```
