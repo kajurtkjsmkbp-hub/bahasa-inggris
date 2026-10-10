@@ -40,6 +40,7 @@ class EnglishLMSApp {
     this.updateStarDisplay();
     this.renderUnitTabs();
     this.renderVocabCards();
+    this.renderQuestionBankList();
     this.setupEventListeners();
 
     // Buka popup sambutan / login jika pertama kali membuka
@@ -191,6 +192,7 @@ class EnglishLMSApp {
     this.currentUnitId = unitId;
     this.renderUnitTabs();
     this.renderVocabCards();
+    this.renderQuestionBankList();
   }
 
   getCurrentUnit() {
@@ -315,6 +317,101 @@ class EnglishLMSApp {
         }
       }
     );
+  }
+
+  scrollToQuestionBank() {
+    this.audio.playTone('pop');
+    const section = document.getElementById('section-question-bank');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  // Render Daftar 100 Soal Lengkap di Halaman Utama
+  renderQuestionBankList(filterCategory = 'all') {
+    const currentUnit = this.getCurrentUnit();
+    const titleEl = document.getElementById('bank-unit-title');
+    const descEl = document.getElementById('bank-unit-desc');
+    const filterContainer = document.getElementById('bank-category-filter');
+    const gridContainer = document.getElementById('bank-questions-grid');
+
+    if (!gridContainer) return;
+
+    if (titleEl) titleEl.textContent = `Daftar 100 Soal Latihan & Pembahasan (${currentUnit.number})`;
+    if (descEl) descEl.textContent = `Tersedia 100 soal bervariasi dengan 10 model soal Kurikulum Merdeka untuk unit ${currentUnit.title}.`;
+
+    const questions = (typeof lmsQuestionBank !== 'undefined' && lmsQuestionBank[currentUnit.id]) ? lmsQuestionBank[currentUnit.id] : [];
+
+    if (questions.length === 0) {
+      gridContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 20px;">Memuat bank soal...</p>';
+      return;
+    }
+
+    // Ambil kategori unik untuk tab filter
+    const uniqueCategories = [...new Set(questions.map(q => q.category))];
+
+    if (filterContainer) {
+      filterContainer.innerHTML = `
+        <button class="bank-filter-btn ${filterCategory === 'all' ? 'active' : ''}" onclick="app.renderQuestionBankList('all')">
+          <span>Semua Soal</span>
+          <span class="filter-count">(${questions.length})</span>
+        </button>
+        ${uniqueCategories.map(cat => {
+          const isActive = (filterCategory === cat) ? 'active' : '';
+          const count = questions.filter(q => q.category === cat).length;
+          return `
+            <button class="bank-filter-btn ${isActive}" onclick="app.renderQuestionBankList('${cat.replace(/'/g, "\\'")}')">
+              <span>${cat}</span>
+              <span class="filter-count">(${count})</span>
+            </button>
+          `;
+        }).join('')}
+      `;
+    }
+
+    // Filter soal yang ditampilkan
+    const displayQuestions = (filterCategory === 'all') ? 
+      questions : 
+      questions.filter(q => q.category === filterCategory);
+
+    gridContainer.innerHTML = displayQuestions.map((q) => {
+      // Dapatkan nomor asli 1 s/d 100
+      const qNum = questions.findIndex(item => item.id === q.id) + 1;
+      const audioWord = q.audioText || (q.item ? q.item.english : null);
+
+      return `
+        <div class="bank-q-card" id="bank-q-${q.id}">
+          <div class="bank-q-top">
+            <span class="bank-q-num">Soal #${qNum}</span>
+            <span class="quiz-category-tag">${q.categoryIcon || '🎯'} ${q.category}</span>
+          </div>
+          <div class="bank-q-title">${q.titleText}</div>
+          <div class="bank-q-highlight">${q.highlightText}</div>
+          ${q.subText ? `<div class="bank-q-sub">${q.subText}</div>` : ''}
+
+          <div class="bank-q-choices">
+            ${q.choices.map((c, cIdx) => `
+              <div class="bank-choice-item ${c.isCorrect ? 'is-answer' : ''}">
+                <span class="choice-letter">${['A', 'B', 'C', 'D'][cIdx]}.</span>
+                <span class="choice-text">${c.text}</span>
+                ${c.isCorrect ? '<span class="choice-badge-correct">✓ Kunci</span>' : ''}
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="bank-q-footer">
+            <div class="bank-q-expl">
+              <strong>💡 Pembahasan:</strong> ${q.explanation}
+            </div>
+            ${audioWord ? `
+              <button class="btn-q-audio" onclick="app.audio.speak('${audioWord.replace(/'/g, "\\'")}')" title="Dengarkan Suara">
+                🔊 Audio
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
   }
 
   // ================= GAME 1: SPELLING BEE (SUSUN HURUF) =================

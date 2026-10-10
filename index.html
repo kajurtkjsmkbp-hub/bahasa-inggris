@@ -97,8 +97,11 @@
         <button class="btn-game btn-game-listen" onclick="app.openListenGame()">
           <span>🎧</span> Tebak Suara & Gambar
         </button>
-        <button class="btn-game btn-game-quiz" onclick="app.openQuizGame()">
-          <span>📝</span> Kuis Bintang 5 Soal
+        <button class="btn-game btn-game-quiz" onclick="app.openQuizGame(100, 'unit')">
+          <span>💯</span> Ujian 100 Soal Unit Ini
+        </button>
+        <button class="btn-game" style="background: linear-gradient(135deg, #10B981, #059669); color: white;" onclick="app.scrollToQuestionBank()">
+          <span>📚</span> Bank 100 Soal & Pembahasan
         </button>
       </div>
     </section>
@@ -106,6 +109,32 @@
     <!-- Grid Kartu Kosakata (Flashcards) -->
     <section class="card-grid" id="vocab-card-grid">
       <!-- Di-render oleh JavaScript -->
+    </section>
+
+    <!-- SECTION BANK 100 SOAL LENGKAP UNIT INI -->
+    <section class="question-bank-section" id="section-question-bank">
+      <div class="bank-section-header">
+        <div class="bank-header-left">
+          <span class="bank-badge">💯 Bank Soal Resmi (100 Soal / Unit)</span>
+          <h3 id="bank-unit-title">Daftar 100 Soal Latihan & Pembahasan</h3>
+          <p id="bank-unit-desc">100 Soal bervariasi dengan 10 model soal Kurikulum Merdeka untuk unit ini.</p>
+        </div>
+        <div class="bank-header-actions">
+          <button class="btn-bank-play" onclick="app.openQuizGame(100, 'unit')">
+            <span>🚀</span> Mulai Ujian Interaktif 100 Soal
+          </button>
+        </div>
+      </div>
+
+      <!-- Kategori Filter Tabs (10 Kategori Model Soal) -->
+      <div class="bank-category-filter" id="bank-category-filter">
+        <!-- Filter tombol kategori dimuat dinamis oleh JavaScript -->
+      </div>
+
+      <!-- Grid 100 Soal Lengkap (Nomor 1 s/d 100) -->
+      <div class="bank-questions-grid" id="bank-questions-grid">
+        <!-- 100 Soal dimuat dinamis oleh JavaScript -->
+      </div>
     </section>
 
   </main>
